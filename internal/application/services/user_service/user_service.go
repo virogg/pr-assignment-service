@@ -47,8 +47,7 @@ func New(userRepo userGetterSetter, teamRepo teamGetter, prRepo prRepo, trManage
 }
 
 func (s *UserService) SetUserActive(ctx context.Context, id string, isActive bool) (*entities.User, error) {
-	user, err := s.userGetterSetter.GetByID(ctx, id)
-	if err != nil {
+	if _, err := s.userGetterSetter.GetByID(ctx, id); err != nil {
 		s.log.Error("failed to get user",
 			slog.String("user_id", id),
 			slog.Any("error", err),
@@ -65,7 +64,7 @@ func (s *UserService) SetUserActive(ctx context.Context, id string, isActive boo
 		return nil, err
 	}
 
-	user, err = s.userGetterSetter.GetByID(ctx, id)
+	user, err := s.userGetterSetter.GetByID(ctx, id)
 	if err != nil {
 		s.log.Error("failed to get updated user",
 			slog.String("user_id", id),
@@ -138,7 +137,7 @@ func (s *UserService) DeactivateTeamUsers(ctx context.Context, teamName string) 
 		openPRs, err := s.prRepo.GetOpenByReviewers(ctx, userIDs)
 		if err != nil {
 			s.log.Error("failed to get open PRs",
-				slog.Group("user_ids", userIDs),
+				slog.Any("user_ids", userIDs),
 				slog.Any("error", err),
 			)
 			return fmt.Errorf("failed to get open PRs: %w", err)
@@ -146,7 +145,7 @@ func (s *UserService) DeactivateTeamUsers(ctx context.Context, teamName string) 
 
 		if err := s.userGetterSetter.SetUsersInactive(ctx, userIDs); err != nil {
 			s.log.Error("failed to deactivate users",
-				slog.Group("user_ids", userIDs),
+				slog.Any("user_ids", userIDs),
 				slog.Any("error", err),
 			)
 			return fmt.Errorf("failed to deactivate users: %w", err)
@@ -165,13 +164,8 @@ func (s *UserService) DeactivateTeamUsers(ctx context.Context, teamName string) 
 				if !isDeactivated {
 					continue
 				}
-				excludeUserIDs := make([]string, 0, len(pr.ReviewerIDs)+1)
-				for _, rID := range pr.ReviewerIDs {
-					excludeUserIDs = append(excludeUserIDs, rID)
-				}
-				excludeUserIDs = append(excludeUserIDs, pr.AuthorID)
 
-				activeUsers, err := s.userGetterSetter.GetActiveUsersInTeam(ctx, team.ID, excludeUserIDs)
+				activeUsers, err := s.userGetterSetter.GetActiveUsersInTeam(ctx, team.ID, append(pr.ReviewerIDs, pr.AuthorID))
 				if err != nil {
 					s.log.Error("failed to get active users",
 						slog.Int64("team_id", team.ID),

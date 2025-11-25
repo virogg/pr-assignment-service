@@ -68,6 +68,5 @@ func NewPool(ctx context.Context, dsn string, log *slog.Logger, opts ...Option) 
 			pool.Close()
 			return nil, fmt.Errorf("failed to ping database: context done while waiting: %w", waitCtx.Err())
 		}
-
 	}
 }

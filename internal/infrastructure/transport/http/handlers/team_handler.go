@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"log/slog"
 	"net/http"
 
@@ -52,8 +51,6 @@ func (h *TeamHandler) CreateTeam(w http.ResponseWriter, r *http.Request) {
 		pkg.RespondError(w, statusCode, errResp)
 		return
 	}
-
-	log.Println(&createdTeam)
 
 	pkg.RespondJSON(w, http.StatusCreated, dto.TeamResponse{
 		Team: mappers.ToTeamDTO(createdTeam),

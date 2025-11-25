@@ -14,13 +14,13 @@ func ToTeamDTO(team *entities.Team) dto.TeamDTO {
 
 	members := make([]dto.UserDTO, 0, len(team.Users))
 	for _, m := range team.Users {
-		dto := dto.UserDTO{
+		usrDto := dto.UserDTO{
 			ID:       m.ID,
 			Username: m.Username,
 			TeamName: m.TeamName,
 			IsActive: m.IsActive,
 		}
-		members = append(members, dto)
+		members = append(members, usrDto)
 	}
 
 	return dto.TeamDTO{
@@ -47,7 +47,7 @@ func ToPRDTO(pr *entities.PullRequest) dto.PullRequestDTO {
 		return dto.PullRequestDTO{}
 	}
 
-	dto := dto.PullRequestDTO{
+	prDto := dto.PullRequestDTO{
 		ID:        pr.ID,
 		Name:      pr.Name,
 		AuthorID:  pr.AuthorID,
@@ -57,15 +57,15 @@ func ToPRDTO(pr *entities.PullRequest) dto.PullRequestDTO {
 
 	if !pr.CreatedAt.IsZero() {
 		createdAt := pr.CreatedAt.Format(time.RFC3339)
-		dto.CreatedAt = &createdAt
+		prDto.CreatedAt = &createdAt
 	}
 
 	if pr.MergedAt != nil {
 		mergedAt := pr.MergedAt.Format(time.RFC3339)
-		dto.MergedAt = &mergedAt
+		prDto.MergedAt = &mergedAt
 	}
 
-	return dto
+	return prDto
 }
 
 func ToPRShortDTO(pr *entities.PullRequest) dto.PullRequestShortDTO {
@@ -89,16 +89,16 @@ func ToPRShortDTOs(prs []*entities.PullRequest) []dto.PullRequestShortDTO {
 	return dtos
 }
 
-func ToEntityTeam(dto *dto.CreateTeamRequest) *entities.Team {
-	if dto == nil {
+func ToEntityTeam(request *dto.CreateTeamRequest) *entities.Team {
+	if request == nil {
 		return nil
 	}
 
-	members := make([]*entities.User, 0, len(dto.Members))
-	for _, m := range dto.Members {
-		user := entities.NewUser(m.ID, m.Username, dto.TeamName, m.IsActive)
+	members := make([]*entities.User, 0, len(request.Members))
+	for _, m := range request.Members {
+		user := entities.NewUser(m.ID, m.Username, request.TeamName, m.IsActive)
 		members = append(members, user)
 	}
 
-	return entities.NewTeam(0, dto.TeamName, members)
+	return entities.NewTeam(0, request.TeamName, members)
 }

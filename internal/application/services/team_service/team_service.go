@@ -70,7 +70,7 @@ func (s *TeamService) CreateTeam(ctx context.Context, team *entities.Team) (*ent
 					slog.String("user_id", user.ID),
 					slog.Any("error", err),
 				)
-				return fmt.Errorf("failed to create user %d: %w", user.ID, err)
+				return fmt.Errorf("failed to create user %s: %w", user.ID, err)
 			}
 		}
 

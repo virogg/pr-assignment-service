@@ -2,8 +2,9 @@ package pr_service
 
 import (
 	"context"
+	crand "crypto/rand"
 	"log/slog"
-	"math/rand"
+	"math/big"
 	"time"
 
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
@@ -35,7 +36,6 @@ type PRService struct {
 	prRepo     prRepo
 	trManager  *manager.Manager
 	log        *slog.Logger
-	rng        *rand.Rand
 }
 
 func New(userGetter userGetter, teamGetter teamGetter, prRepo prRepo, trManager *manager.Manager, log *slog.Logger) *PRService {
@@ -45,7 +45,6 @@ func New(userGetter userGetter, teamGetter teamGetter, prRepo prRepo, trManager 
 		prRepo:     prRepo,
 		trManager:  trManager,
 		log:        log,
-		rng:        rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
 }
 
@@ -103,7 +102,7 @@ func (s *PRService) CreatePR(ctx context.Context, prID, prName, authorID string)
 	s.log.Info("PR created successfully",
 		slog.String("pr_id", pr.ID),
 		slog.String("author_id", authorID),
-		slog.Group("reviewers", reviewerIDs),
+		slog.Any("reviewers", reviewerIDs),
 	)
 
 	return pr, nil
@@ -195,8 +194,7 @@ func (s *PRService) ReassignReviewer(ctx context.Context, prID, oldID string) (*
 		return nil, "", err
 	}
 
-	excludeUserIDs := append(pr.ReviewerIDs, pr.AuthorID)
-	activeCandidates, err := s.userGetter.GetActiveUsersInTeam(ctx, team.ID, excludeUserIDs)
+	activeCandidates, err := s.userGetter.GetActiveUsersInTeam(ctx, team.ID, append(pr.ReviewerIDs, pr.AuthorID))
 	if err != nil {
 		s.log.Error("failed to get active candidates",
 			slog.Int64("team_id", team.ID),
@@ -269,7 +267,12 @@ func (s *PRService) selectRandom(candidates []*entities.User, maxCount int) []*e
 	copy(shuffled, candidates)
 
 	for i := len(shuffled) - 1; i > 0; i-- {
-		j := s.rng.Intn(i + 1)
+		n, err := crand.Int(crand.Reader, big.NewInt(int64(i+1)))
+		if err != nil {
+			s.log.Error("crypto/rand failed, using deterministic order", slog.Any("err", err))
+			break
+		}
+		j := int(n.Int64())
 		shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
 	}
 

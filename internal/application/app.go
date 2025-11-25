@@ -24,7 +24,7 @@ type App struct {
 	log    *slog.Logger
 }
 
-func NewApp(ctx context.Context, cfg *config.Config, log *slog.Logger) (*App, error) {
+func New(ctx context.Context, cfg *config.Config, log *slog.Logger) (*App, error) {
 	pool, err := pkgpg.NewPool(ctx, cfg.DB.GetDSN(), log)
 	if err != nil {
 		log.Error("Failed to connect to database", slog.Any("error", err))

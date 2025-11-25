@@ -45,12 +45,7 @@ func (pr *PullRequest) CanMerge() bool {
 }
 
 func (pr *PullRequest) HasReviewer(userID string) bool {
-	reviewerIDs := make([]string, 0, len(pr.ReviewerIDs))
-	for _, reviewerID := range pr.ReviewerIDs {
-		reviewerIDs = append(reviewerIDs, reviewerID)
-	}
-
-	return slices.Contains(reviewerIDs, userID)
+	return slices.Contains(pr.ReviewerIDs, userID)
 }
 
 func (pr *PullRequest) AddReviewer(user *User) error {
@@ -71,18 +66,18 @@ func (pr *PullRequest) AddReviewer(user *User) error {
 	return nil
 }
 
-func (pr *PullRequest) ReplaceReviewer(old, new *User) error {
+func (pr *PullRequest) ReplaceReviewer(oldRev, newRev *User) error {
 	if pr.IsMerged() {
 		return domainerr.ErrPRMerged
 	}
 
-	if !pr.HasReviewer(old.ID) {
+	if !pr.HasReviewer(oldRev.ID) {
 		return domainerr.ErrNotReviewer
 	}
 
 	for i, reviewerID := range pr.ReviewerIDs {
-		if reviewerID == old.ID {
-			pr.ReviewerIDs[i] = new.ID
+		if reviewerID == oldRev.ID {
+			pr.ReviewerIDs[i] = newRev.ID
 			return nil
 		}
 	}

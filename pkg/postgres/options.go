@@ -26,9 +26,9 @@ func MaxConnLifetime(lifetime time.Duration) Option {
 	}
 }
 
-func MaxConnIdleTime(time time.Duration) Option {
+func MaxConnIdleTime(idleTime time.Duration) Option {
 	return func(c *pgxpool.Config) {
-		c.MaxConnIdleTime = time
+		c.MaxConnIdleTime = idleTime
 	}
 }
 

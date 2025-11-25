@@ -166,8 +166,6 @@ func (r *TeamPostgresRepository) TeamExists(ctx context.Context, name string) (b
 			return false, nil
 		}
 		return false, fmt.Errorf("%w: during `team exists`: %w", infraerr.ErrDB, err)
-
 	}
-
 	return true, nil
 }

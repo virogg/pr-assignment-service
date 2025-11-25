@@ -10,7 +10,6 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	trmpgx "github.com/avito-tech/go-transaction-manager/drivers/pgxv5/v2"
-	//"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/virogg/pr-assignment-service/internal/domain/entities"
@@ -141,8 +140,7 @@ func (r *UserPostgresRepository) SetActive(ctx context.Context, id string, isAct
 		return fmt.Errorf("%w: during `set active`: %w", infraerr.ErrDB, err)
 	}
 	if result.RowsAffected() == 0 {
-		//return domainerr.ErrUserNotFound
-		return infraerr.ErrNotFound
+		return domainerr.ErrUserNotFound
 	}
 
 	return nil
