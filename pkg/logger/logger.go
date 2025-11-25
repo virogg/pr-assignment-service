@@ -21,6 +21,8 @@ func New(logLvl string) *slog.Logger {
 		opts.Level = slog.LevelInfo
 		log = slog.New(slog.NewJSONHandler(os.Stdout, opts))
 	default: // default value is set to "dev" in config
+		opts.Level = slog.LevelDebug
+		log = slog.New(slog.NewJSONHandler(os.Stdout, opts))
 	}
 
 	return log
