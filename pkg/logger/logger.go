@@ -20,8 +20,7 @@ func New(logLvl string) *slog.Logger {
 	case "prod":
 		opts.Level = slog.LevelInfo
 		log = slog.New(slog.NewJSONHandler(os.Stdout, opts))
-	default:
-		panic("unknown log level")
+	default: // default value is set to "dev" in config
 	}
 
 	return log

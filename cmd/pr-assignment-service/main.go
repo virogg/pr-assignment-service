@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -19,18 +18,12 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 
-	app, err := application.New(ctx, cfg, log)
-	if err != nil {
-		panic(err)
-	}
+	app := application.Must(ctx, cfg, log)
 	defer app.Close()
 
 	log.Info("Starting PR service")
 
-	if err := app.Run(ctx); err != nil {
-		log.Error("Application error", slog.Any("error", err))
-		panic(err)
-	}
+	app.MustRun(ctx)
 
 	log.Info("PR service stopped successfully")
 }

@@ -19,20 +19,19 @@ import (
 
 type Server struct {
 	httpServer *http.Server
-	log        *slog.Logger
 	port       string
+	log        *slog.Logger
 }
 
 func NewServer(
-	log *slog.Logger,
 	port string,
 	prService *pr_service.PRService,
 	statsService *stats_service.StatsService,
 	teamService *team_service.TeamService,
 	userService *user_service.UserService,
-
+	log *slog.Logger,
 ) *Server {
-	router := NewRouter(log, prService, statsService, teamService, userService)
+	router := NewRouter(prService, statsService, teamService, userService, log)
 
 	return &Server{
 		httpServer: &http.Server{
@@ -42,8 +41,8 @@ func NewServer(
 			WriteTimeout: 15 * time.Second,
 			IdleTimeout:  60 * time.Second,
 		},
-		log:  log,
 		port: port,
+		log:  log,
 	}
 }
 

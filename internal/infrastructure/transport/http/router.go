@@ -14,11 +14,11 @@ import (
 )
 
 func NewRouter(
-	log *slog.Logger,
 	prService *pr_service.PRService,
 	statsService *stats_service.StatsService,
 	teamService *team_service.TeamService,
 	userService *user_service.UserService,
+	log *slog.Logger,
 ) *chi.Mux {
 	r := chi.NewRouter()
 

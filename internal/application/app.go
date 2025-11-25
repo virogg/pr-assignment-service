@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/virogg/pr-assignment-service/internal/application/services/pr_service"
 	"github.com/virogg/pr-assignment-service/internal/application/services/stats_service"
 	"github.com/virogg/pr-assignment-service/internal/application/services/team_service"
@@ -12,9 +11,10 @@ import (
 	"github.com/virogg/pr-assignment-service/internal/infrastructure/repository/postgres"
 	"github.com/virogg/pr-assignment-service/internal/infrastructure/transport/http"
 	"github.com/virogg/pr-assignment-service/pkg/config"
-	pkgpg "github.com/virogg/pr-assignment-service/pkg/postgres"
+	pkgpgx "github.com/virogg/pr-assignment-service/pkg/postgres"
 
 	trmpgx "github.com/avito-tech/go-transaction-manager/drivers/pgxv5/v2"
+	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -25,7 +25,7 @@ type App struct {
 }
 
 func New(ctx context.Context, cfg *config.Config, log *slog.Logger) (*App, error) {
-	pool, err := pkgpg.NewPool(ctx, cfg.DB.GetDSN(), log)
+	pool, err := pkgpgx.NewPool(ctx, cfg.DB.GetDSN(), log)
 	if err != nil {
 		log.Error("Failed to connect to database", slog.Any("error", err))
 		return nil, err
@@ -44,7 +44,7 @@ func New(ctx context.Context, cfg *config.Config, log *slog.Logger) (*App, error
 	userService := user_service.New(userRepo, teamRepo, prRepo, trManager, log)
 	statsService := stats_service.New(statsRepo, log)
 
-	server := http.NewServer(log, cfg.ServerPort, prService, statsService, teamService, userService)
+	server := http.NewServer(cfg.ServerPort, prService, statsService, teamService, userService, log)
 
 	return &App{
 		server: server,
@@ -53,10 +53,18 @@ func New(ctx context.Context, cfg *config.Config, log *slog.Logger) (*App, error
 	}, nil
 }
 
-func (a *App) Run(ctx context.Context) error {
-	err := a.server.Start(ctx)
+func Must(ctx context.Context, cfg *config.Config, log *slog.Logger) *App {
+	app, err := New(ctx, cfg, log)
 	if err != nil {
+		panic(err)
+	}
+	return app
+}
+
+func (a *App) Run(ctx context.Context) error {
+	if err := a.server.Start(ctx); err != nil {
 		a.log.Error("Server error", slog.Any("error", err))
+		return err
 	}
 
 	a.log.Info("Shutting down application")
@@ -65,7 +73,7 @@ func (a *App) Run(ctx context.Context) error {
 
 func (a *App) MustRun(ctx context.Context) {
 	if err := a.Run(ctx); err != nil {
-		a.log.Error("failed to run application", slog.Any("error", err))
+		a.log.Error("Application error", slog.Any("error", err))
 		panic(err)
 	}
 }
