@@ -1,0 +1,80 @@
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+  modules-download-mode: readonly
+
+linters:
+  enable:
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gocritic
+    - revive
+    - goconst
+    - misspell
+    - unconvert
+    - unparam
+    - whitespace
+    - gosec
+    - errorlint
+
+  disable: []
+
+  settings:
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - style
+        - performance
+        - experimental
+        - opinionated
+
+    revive:
+      severity: warning
+
+    goconst:
+      min-len: 3
+      min-occurrences: 3
+
+    misspell:
+      locale: US
+
+    unused:
+      check-exported: false
+
+    exclusions:
+      generated: lax
+      presets:
+        - comments
+        - common-false-positives
+        - legacy
+        - std-error-handling
+      paths:
+        - third_party$
+        - builtin$
+        - examples$
+
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+
+  settings:
+    gofmt:
+      simplify: true
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+output:
+  formats:
+    text:
+      path: stdout
+      colors: true
+      print-issued-lines: true
+      print-linter-name: true
