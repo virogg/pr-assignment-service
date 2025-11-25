@@ -9,7 +9,7 @@ import (
 )
 
 func TestHealthcheck(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/health", nil)
+	req := httptest.NewRequest(http.MethodGet, "/health", http.NoBody)
 	w := httptest.NewRecorder()
 
 	Healthcheck(w, req)
