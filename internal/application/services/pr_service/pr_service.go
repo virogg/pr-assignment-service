@@ -13,15 +13,18 @@ import (
 	vo "github.com/virogg/pr-assignment-service/internal/domain/value_objects"
 )
 
+//go:generate mockgen -destination=internal/application/services/pr_service/mocks/mock_user_getter.go -package=mocks ./internal/application/services/pr_service userGetter
 type userGetter interface {
 	GetActiveUsersInTeam(ctx context.Context, id int64, excludeUsers []string) ([]*entities.User, error)
 	GetByID(ctx context.Context, id string) (*entities.User, error)
 }
 
+//go:generate mockgen -destination=internal/application/services/pr_service/mocks/mock_team_getter.go -package=mocks ./internal/application/services/pr_service teamGetter
 type teamGetter interface {
 	GetByName(ctx context.Context, name string) (*entities.Team, error)
 }
 
+//go:generate mockgen -destination=internal/application/services/pr_service/mocks/mock_pr_repo.go -package=mocks ./internal/application/services/pr_service prRepo
 type prRepo interface {
 	Create(ctx context.Context, pr *entities.PullRequest) error
 	GetByID(ctx context.Context, id string) (*entities.PullRequest, error)
@@ -82,7 +85,7 @@ func (s *PRService) CreatePR(ctx context.Context, prID, prName, authorID string)
 		reviewerIDs = append(reviewerIDs, r.ID)
 	}
 
-	pr := entities.NewPullRequest(prID, prName, author.ID, vo.PRStatusOpen, reviewerIDs, time.Now())
+	pr := entities.NewPullRequest(prID, prName, author.ID, vo.PRStatusOpen, time.Now(), reviewerIDs...)
 
 	err = s.trManager.Do(ctx, func(ctx context.Context) error {
 		if err := s.prRepo.Create(ctx, pr); err != nil {

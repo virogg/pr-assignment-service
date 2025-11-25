@@ -13,6 +13,7 @@ import (
 	pkg "github.com/virogg/pr-assignment-service/pkg/http"
 )
 
+//go:generate mockgen -destination=internal/infrastructure/transport/http/handlers/mocks/mock_team_service.go -package=mocks ./internal/infrastructure/transport/http/handlers teamService
 type teamService interface {
 	CreateTeam(ctx context.Context, team *entities.Team) (*entities.Team, error)
 	GetTeam(ctx context.Context, teamName string) (*entities.Team, error)

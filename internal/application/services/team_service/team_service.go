@@ -10,10 +10,12 @@ import (
 	domainerr "github.com/virogg/pr-assignment-service/internal/domain/errors"
 )
 
+//go:generate mockgen -destination=internal/application/services/team_service/mocks/mock_user_creator.go -package=mocks ./internal/application/services/team_service userCreator
 type userCreator interface {
 	Create(ctx context.Context, user *entities.User, teamID int64) error
 }
 
+//go:generate mockgen -destination=internal/application/services/team_service/mocks/mock_team_repo.go -package=mocks ./internal/application/services/team_service teamRepo
 type teamRepo interface {
 	Create(ctx context.Context, team *entities.Team) error
 	TeamExists(ctx context.Context, name string) (bool, error)

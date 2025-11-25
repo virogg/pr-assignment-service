@@ -102,8 +102,8 @@ func (r *StatsPostgresRepository) GetTeamStatistics(ctx context.Context) ([]enti
 	query := `
 		SELECT
 			t.name,
-			COUNT(u.id) AS total_members,
-			COUNT(CASE WHEN u.is_active = true THEN 1 END) AS active_members,
+			COUNT(DISTINCT u.id) AS total_members,
+			COUNT(DISTINCT u.id) FILTER (WHERE u.is_active = true) AS active_members,
 			COUNT(DISTINCT pr.id) AS total_prs
 		FROM teams t
 		LEFT JOIN users u ON t.id = u.team_id

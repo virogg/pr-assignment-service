@@ -13,6 +13,7 @@ import (
 	pkg "github.com/virogg/pr-assignment-service/pkg/http"
 )
 
+//go:generate mockgen -destination=internal/infrastructure/transport/http/handlers/mocks/mock_pr_service.go -package=mocks ./internal/infrastructure/transport/http/handlers prService
 type prService interface {
 	CreatePR(ctx context.Context, prID, prName, authorID string) (*entities.PullRequest, error)
 	GetPR(ctx context.Context, prID string) (*entities.PullRequest, error)

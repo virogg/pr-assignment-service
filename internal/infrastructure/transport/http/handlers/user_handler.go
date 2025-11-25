@@ -13,6 +13,7 @@ import (
 	pkg "github.com/virogg/pr-assignment-service/pkg/http"
 )
 
+//go:generate mockgen -destination=internal/infrastructure/transport/http/handlers/mocks/mock_user_service.go -package=mocks ./internal/infrastructure/transport/http/handlers userService
 type userService interface {
 	SetUserActive(ctx context.Context, id string, isActive bool) (*entities.User, error)
 	GetUserReviews(ctx context.Context, id string) ([]*entities.PullRequest, error)

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/virogg/pr-assignment-service/internal/domain/entities"
 	domainerr "github.com/virogg/pr-assignment-service/internal/domain/errors"
 	vo "github.com/virogg/pr-assignment-service/internal/domain/value_objects"
 	infraerr "github.com/virogg/pr-assignment-service/internal/infrastructure/errors"
@@ -15,7 +16,6 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/virogg/pr-assignment-service/internal/domain/entities"
 )
 
 type PRPostgresRepository struct {

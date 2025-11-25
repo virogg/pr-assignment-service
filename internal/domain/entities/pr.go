@@ -24,7 +24,7 @@ type PullRequest struct {
 	MergedAt    *time.Time
 }
 
-func NewPullRequest(id, name, authorID string, status vo.PRStatus, reviewers []string, createdAt time.Time) *PullRequest {
+func NewPullRequest(id, name, authorID string, status vo.PRStatus, createdAt time.Time, reviewers ...string) *PullRequest {
 	return &PullRequest{
 		ID:          id,
 		Name:        name,

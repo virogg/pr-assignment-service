@@ -9,6 +9,7 @@ import (
 	"github.com/virogg/pr-assignment-service/internal/domain/entities"
 )
 
+//go:generate mockgen -destination=internal/application/services/user_service/mocks/mock_user_getter_setter.go -package=mocks ./internal/application/services/user_service userGetterSetter
 type userGetterSetter interface {
 	GetByID(ctx context.Context, id string) (*entities.User, error)
 	GetActiveUsersInTeam(ctx context.Context, id int64, excludeUserIDs []string) ([]*entities.User, error)
@@ -17,10 +18,12 @@ type userGetterSetter interface {
 	SetUsersInactive(ctx context.Context, userIDs []string) error
 }
 
+//go:generate mockgen -destination=internal/application/services/user_service/mocks/mock_team_getter.go -package=mocks ./internal/application/services/user_service teamGetter
 type teamGetter interface {
 	GetByName(ctx context.Context, name string) (*entities.Team, error)
 }
 
+//go:generate mockgen -destination=internal/application/services/user_service/mocks/mock_pr_repo.go -package=mocks ./internal/application/services/user_service prRepo
 type prRepo interface {
 	AddReviewers(ctx context.Context, id string, reviewerIDs []string) error
 	RemoveReviewer(ctx context.Context, prID, reviewerID string) error

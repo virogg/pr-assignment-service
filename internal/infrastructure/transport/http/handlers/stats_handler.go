@@ -9,6 +9,7 @@ import (
 	pkg "github.com/virogg/pr-assignment-service/pkg/http"
 )
 
+//go:generate mockgen -destination=internal/infrastructure/transport/http/handlers/mocks/mock_stats_service.go -package=mocks ./internal/infrastructure/transport/http/handlers statsService
 type statsService interface {
 	GetUserStatistics(ctx context.Context) ([]entities.UserStats, error)
 	GetPRStatistics(ctx context.Context) (*entities.PRStats, error)

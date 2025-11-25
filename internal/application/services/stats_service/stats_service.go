@@ -7,6 +7,7 @@ import (
 	"github.com/virogg/pr-assignment-service/internal/domain/entities"
 )
 
+//go:generate mockgen -destination=internal/application/services/stats_service/mocks/mock_stats_repo.go -package=mocks ./internal/application/services/stats_service statsRepo
 type statsRepo interface {
 	GetUserStatistics(ctx context.Context) ([]entities.UserStats, error)
 	GetPRStatistics(ctx context.Context) (*entities.PRStats, error)
